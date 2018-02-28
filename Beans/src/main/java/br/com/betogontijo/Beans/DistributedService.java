@@ -1,13 +1,13 @@
 package br.com.betogontijo.Beans;
 
+import java.util.Set;
+
+import org.knowm.xchange.dto.marketdata.Ticker;
+
 public interface DistributedService {
 
-	public double add(double a, double b);
+	Ticker convert(String from, String todouble);
 
-	public double sub(double a, double b);
-
-	public double mul(double a, double b);
-
-	public double div(double a, double b);
+	Set<String> getList();
 
 }

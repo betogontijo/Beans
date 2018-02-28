@@ -1,48 +1,75 @@
 package br.com.betogontijo;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.knowm.xchange.Exchange;
 import org.knowm.xchange.ExchangeFactory;
 import org.knowm.xchange.bitstamp.BitstampExchange;
+import org.knowm.xchange.currency.Currency;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.marketdata.Ticker;
+import org.knowm.xchange.dto.meta.CurrencyPairMetaData;
+import org.knowm.xchange.mercadobitcoin.MercadoBitcoinExchange;
+import org.knowm.xchange.poloniex.PoloniexExchange;
 import org.knowm.xchange.service.marketdata.MarketDataService;
 
 import br.com.betogontijo.Beans.DistributedService;
 
 public class DistributedServiceImpl implements DistributedService {
 
-	@Override
-	public double add(double a, double b) {
-		Exchange bitstamp = ExchangeFactory.INSTANCE.createExchange(BitstampExchange.class.getName());
-	
-		MarketDataService marketDataService = bitstamp.getMarketDataService();
+	Exchange mercadoBitcoin = ExchangeFactory.INSTANCE.createExchange(MercadoBitcoinExchange.class.getName());
+	Exchange poloniexExchange = ExchangeFactory.INSTANCE.createExchange(PoloniexExchange.class.getName());
+	Exchange bitstamp = ExchangeFactory.INSTANCE.createExchange(BitstampExchange.class.getName());
 
-		Ticker ticker;
+	@Override
+	public Set<String> getList() {
+		Set<String> resp = new HashSet<String>();
+		for (CurrencyPair currencyPair : mercadoBitcoin.getExchangeMetaData().getCurrencyPairs().keySet()) {
+			resp.add(currencyPair.toString());
+		}
+		for (CurrencyPair currencyPair : poloniexExchange.getExchangeMetaData().getCurrencyPairs().keySet()) {
+			resp.add(currencyPair.toString());
+		}
+		for (CurrencyPair currencyPair : bitstamp.getExchangeMetaData().getCurrencyPairs().keySet()) {
+			resp.add(currencyPair.toString());
+		}
+		return resp;
+	}
+	
+	@Override
+	public Ticker convert(String from, String to) {
+		Currency fromCurrency = Currency.getInstance(from);
+		Currency toCurrency = Currency.getInstance(to);
+		CurrencyPair currencyPair = new CurrencyPair(fromCurrency, toCurrency);
+		CurrencyPairMetaData currencyPairMetaData = mercadoBitcoin.getExchangeMetaData().getCurrencyPairs()
+				.get(currencyPair);
+		Exchange exchange = null;
+		if (currencyPairMetaData != null) {
+			exchange = mercadoBitcoin;
+		} else {
+			currencyPairMetaData = poloniexExchange.getExchangeMetaData().getCurrencyPairs().get(currencyPair);
+			if (currencyPairMetaData != null) {
+				exchange = poloniexExchange;
+			} else {
+				currencyPairMetaData = bitstamp.getExchangeMetaData().getCurrencyPairs().get(currencyPair);
+				if (currencyPairMetaData != null) {
+					exchange = bitstamp;
+				} else {
+					return null;
+				}
+			}
+		}
+		MarketDataService marketDataService = exchange.getMarketDataService();
+
+		Ticker ticker = null;
 		try {
-			ticker = marketDataService.getTicker(CurrencyPair.BTC_USD);
-			System.out.println(ticker.toString());
+			ticker = marketDataService.getTicker(currencyPair);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return a + b;
+		return ticker;
 	}
-
-	@Override
-	public double sub(double a, double b) {
-		return a - b;
-	}
-
-	@Override
-	public double mul(double a, double b) {
-		return a * b;
-	}
-
-	@Override
-	public double div(double a, double b) {
-		return a / b;
-	}
-
 }

@@ -1,5 +1,6 @@
 package br.com.betogontijo;
 
+import org.knowm.xchange.dto.marketdata.Ticker;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -14,8 +15,9 @@ public class ClientApplication {
 	public static void main(String[] args) {
 		ConfigurableApplicationContext applicationContext = SpringApplication.run(ClientApplication.class, args);
 		DistributedService service = applicationContext.getBean(DistributedService.class);
-		double bookingOutcome = service.add(3, 2);
-		System.out.println(bookingOutcome);
+		Ticker ticker = service.convert("BTC", "USD");
+		System.out.println(ticker);
+		System.out.println(service.getList());
 		applicationContext.close();
 	}
 

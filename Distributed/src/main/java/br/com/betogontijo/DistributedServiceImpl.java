@@ -1,7 +1,9 @@
 package br.com.betogontijo;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.knowm.xchange.Exchange;
@@ -24,20 +26,38 @@ public class DistributedServiceImpl implements DistributedService {
 	Exchange bitstamp = ExchangeFactory.INSTANCE.createExchange(BitstampExchange.class.getName());
 
 	@Override
-	public Set<String> getList() {
-		Set<String> resp = new HashSet<String>();
+	public Map<String, Set<String>> getMap() {
+		Map<String, Set<String>> resp = new HashMap<String, Set<String>>();
 		for (CurrencyPair currencyPair : mercadoBitcoin.getExchangeMetaData().getCurrencyPairs().keySet()) {
-			resp.add(currencyPair.toString());
+			String[] currencies = currencyPair.toString().split("/");
+			Set<String> values = resp.get(currencies[0]);
+			if (values == null) {
+				values = new HashSet<String>();
+			}
+			values.add(currencies[1]);
+			resp.put(currencies[0], values);
 		}
 		for (CurrencyPair currencyPair : poloniexExchange.getExchangeMetaData().getCurrencyPairs().keySet()) {
-			resp.add(currencyPair.toString());
+			String[] currencies = currencyPair.toString().split("/");
+			Set<String> values = resp.get(currencies[0]);
+			if (values == null) {
+				values = new HashSet<String>();
+			}
+			values.add(currencies[1]);
+			resp.put(currencies[0], values);
 		}
 		for (CurrencyPair currencyPair : bitstamp.getExchangeMetaData().getCurrencyPairs().keySet()) {
-			resp.add(currencyPair.toString());
+			String[] currencies = currencyPair.toString().split("/");
+			Set<String> values = resp.get(currencies[0]);
+			if (values == null) {
+				values = new HashSet<String>();
+			}
+			values.add(currencies[1]);
+			resp.put(currencies[0], values);
 		}
 		return resp;
 	}
-	
+
 	@Override
 	public Ticker convert(String from, String to) {
 		Currency fromCurrency = Currency.getInstance(from);

@@ -37,20 +37,17 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>br.com.betogontijo</groupId>
 			<artifactId>Beans</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>org.knowm.xchange</groupId>
-			<artifactId>xchange-core</artifactId>
-			<version>4.3.4-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>
@@ -70,7 +67,6 @@
 			<artifactId>xchange-mercadobitcoin</artifactId>
 			<version>4.3.4-SNAPSHOT</version>
 		</dependency>
-
 	</dependencies>
 
 	<build>

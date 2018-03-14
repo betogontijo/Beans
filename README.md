@@ -12,7 +12,7 @@
 ## Arquitetura
     Servidor
     
-      Adquirir dados da XChange API [https://github.com/timmolter/XChang]
+      Adquirir dados da (XChange API)[https://github.com/timmolter/XChang]
       
       Realizar conversão de moeda.
       

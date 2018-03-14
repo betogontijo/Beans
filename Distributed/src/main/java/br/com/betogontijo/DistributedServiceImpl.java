@@ -17,6 +17,7 @@ import org.knowm.xchange.mercadobitcoin.MercadoBitcoinExchange;
 import org.knowm.xchange.poloniex.PoloniexExchange;
 import org.knowm.xchange.service.marketdata.MarketDataService;
 
+import br.com.betogontijo.Beans.CustomTicker;
 import br.com.betogontijo.Beans.DistributedService;
 
 public class DistributedServiceImpl implements DistributedService {
@@ -59,7 +60,8 @@ public class DistributedServiceImpl implements DistributedService {
 	}
 
 	@Override
-	public Ticker convert(String from, String to) {
+	public CustomTicker convert(String from, String to) {
+		String market = null;
 		Currency fromCurrency = Currency.getInstance(from);
 		Currency toCurrency = Currency.getInstance(to);
 		CurrencyPair currencyPair = new CurrencyPair(fromCurrency, toCurrency);
@@ -68,28 +70,34 @@ public class DistributedServiceImpl implements DistributedService {
 		Exchange exchange = null;
 		if (currencyPairMetaData != null) {
 			exchange = mercadoBitcoin;
+			market = "Mercado Bitcoin";
 		} else {
 			currencyPairMetaData = poloniexExchange.getExchangeMetaData().getCurrencyPairs().get(currencyPair);
 			if (currencyPairMetaData != null) {
 				exchange = poloniexExchange;
+				market = "Poloniex";
 			} else {
 				currencyPairMetaData = bitstamp.getExchangeMetaData().getCurrencyPairs().get(currencyPair);
 				if (currencyPairMetaData != null) {
 					exchange = bitstamp;
+					market = "Bitstamp";
 				} else {
 					return null;
 				}
 			}
 		}
 		MarketDataService marketDataService = exchange.getMarketDataService();
-
 		Ticker ticker = null;
 		try {
 			ticker = marketDataService.getTicker(currencyPair);
+			CustomTicker customTicker = new CustomTicker();
+			customTicker.setMarket(market);
+			customTicker.setTicker(ticker);
+			return customTicker;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return ticker;
+		return null;
 	}
 }
